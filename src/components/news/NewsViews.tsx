@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
-import { CATEGORIES, SOURCES, NEWS, NewsItem } from "./data";
+import { CATEGORIES, AGE_GROUPS, SOURCES, NEWS, NewsItem } from "./data";
 
 // ── SearchBar ─────────────────────────────────────────────────────────────────
 
@@ -85,6 +85,18 @@ export function NewsCard({ item, index }: { item: NewsItem; index: number }) {
           <span className="font-mono text-[0.65rem] tracking-[0.05em] uppercase text-muted-foreground border border-border px-2 py-0.5 rounded-sm">
             {item.source}
           </span>
+          {item.ageGroups.map((ag) => {
+            const group = AGE_GROUPS.find((g) => g.id === ag);
+            if (!group) return null;
+            return (
+              <span
+                key={ag}
+                className={`font-mono text-[0.65rem] tracking-[0.05em] uppercase px-2 py-0.5 rounded-sm border ${group.color} ${group.border}`}
+              >
+                {group.label}
+              </span>
+            );
+          })}
         </div>
         <div className="flex items-center gap-1 text-muted-foreground shrink-0">
           <Icon name="Clock" size={11} />
@@ -249,6 +261,97 @@ export function CategoriesPage() {
         <div className="text-center py-10 text-muted-foreground">
           <Icon name="MousePointerClick" size={28} className="mx-auto mb-2 opacity-30" />
           <p className="text-sm">Выберите категорию выше</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── AgeGroupsPage ─────────────────────────────────────────────────────────────
+
+export function AgeGroupsPage() {
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+
+  const group = AGE_GROUPS.find((g) => g.id === activeGroup);
+  const filtered = activeGroup ? NEWS.filter((n) => n.ageGroups.includes(activeGroup)) : [];
+
+  return (
+    <div className="animate-fade-in">
+      <div className="mb-6">
+        <h1 className="font-serif text-3xl font-semibold">По возрасту</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Новости подобраны по интересам — выберите свою группу. Все материалы доступны без ограничений.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        {AGE_GROUPS.map((g) => {
+          const count = NEWS.filter((n) => n.ageGroups.includes(g.id)).length;
+          const isActive = activeGroup === g.id;
+          return (
+            <button
+              key={g.id}
+              onClick={() => setActiveGroup(isActive ? null : g.id)}
+              className={`flex items-start gap-4 p-5 border rounded text-left transition-all duration-150 ${
+                isActive ? `${g.border} ${g.bg}` : "border-border hover:bg-secondary"
+              }`}
+            >
+              <div className={`w-10 h-10 rounded flex items-center justify-center shrink-0 border ${
+                isActive ? `${g.border} ${g.bg}` : "border-border bg-secondary"
+              }`}>
+                <Icon name={g.icon} size={20} className={isActive ? g.color : "text-muted-foreground"} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className={`font-semibold text-sm ${isActive ? g.color : "text-foreground"}`}>
+                    {g.label}
+                  </span>
+                  <span className={`font-mono text-[0.65rem] px-2 py-0.5 rounded-sm shrink-0 ${
+                    isActive ? `${g.bg} ${g.color}` : "bg-secondary text-muted-foreground"
+                  }`}>
+                    {count}
+                  </span>
+                </div>
+                <p className="text-xs font-mono text-muted-foreground uppercase tracking-wide mb-1">{g.sublabel}</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">{g.description}</p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {activeGroup && group && filtered.length > 0 && (
+        <>
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`flex items-center gap-2 ${group.color}`}>
+              <Icon name={group.icon} size={13} />
+              <span className="text-xs font-mono uppercase tracking-widest">{group.label} — {group.sublabel}</span>
+            </div>
+            <div className="flex-1 border-t border-border" />
+            <button
+              onClick={() => setActiveGroup(null)}
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+            >
+              <Icon name="X" size={10} /> Сбросить
+            </button>
+          </div>
+          <div className="flex flex-col gap-3">
+            {filtered.map((item, i) => <NewsCard key={item.id} item={item} index={i} />)}
+          </div>
+        </>
+      )}
+
+      {activeGroup && filtered.length === 0 && (
+        <div className="text-center py-10 text-muted-foreground">
+          <Icon name="Inbox" size={28} className="mx-auto mb-2 opacity-30" />
+          <p className="text-sm">В этой группе пока нет новостей</p>
+        </div>
+      )}
+
+      {!activeGroup && (
+        <div className="text-center py-10 text-muted-foreground">
+          <Icon name="Users" size={28} className="mx-auto mb-2 opacity-30" />
+          <p className="text-sm">Выберите возрастную группу выше</p>
         </div>
       )}
     </div>

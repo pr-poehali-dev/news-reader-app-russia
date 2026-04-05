@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
 import Header from "@/components/news/Header";
-import { HomePage, CategoriesPage } from "@/components/news/NewsViews";
+import { HomePage, CategoriesPage, AgeGroupsPage } from "@/components/news/NewsViews";
 import { ProfilePage, NotificationsPage } from "@/components/news/SettingsViews";
 
 export default function Index() {
@@ -10,6 +10,7 @@ export default function Index() {
   const pages: Record<string, React.ReactElement> = {
     home: <HomePage />,
     categories: <CategoriesPage />,
+    age: <AgeGroupsPage />,
     profile: <ProfilePage />,
     notifications: <NotificationsPage />,
   };

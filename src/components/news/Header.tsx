@@ -3,6 +3,7 @@ import Icon from "@/components/ui/icon";
 const nav = [
   { id: "home", label: "Главная", icon: "Newspaper" },
   { id: "categories", label: "Категории", icon: "LayoutGrid" },
+  { id: "age", label: "По возрасту", icon: "Users" },
   { id: "profile", label: "Профиль", icon: "User" },
   { id: "notifications", label: "Уведомления", icon: "Bell" },
 ];
